@@ -53,7 +53,7 @@ download_release() {
 install_version() {
 	local install_type="$1"
 	local version="$2"
-	local install_path="${3%/bin}"
+	local install_path="$3"
 
 	local os arch_dir
 	os="$(uname -s | tr '[:upper:]' '[:lower:]')"
@@ -67,15 +67,12 @@ install_version() {
 	fi
 
 	(
-		mkdir -p "$install_path/binaries/"
-		cp -r "$ASDF_DOWNLOAD_PATH"/bin/* "$install_path/binaries/"
-		ln -s "$install_path/binaries/${arch_dir}" "$install_path/bin"
-		rm -rf "${ASDF_DOWNLOAD_PATH:?}"/bin/
 		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
-		test -x "$install_path/bin/$tool_cmd" || fail "Expected $install_path/bin/$tool_cmd to be executable."
+		test -x "$install_path/bin/${arch_dir}/$tool_cmd" ||
+			fail "Expected $install_path/bin/${arch_dir}/$tool_cmd to be executable."
 
 		echo "$TOOL_NAME $version installation was successful!"
 	) || (
