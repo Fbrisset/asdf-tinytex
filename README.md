@@ -43,6 +43,16 @@ asdf global tinytex latest
 tex --version
 ```
 
+Install package : 
+
+```shell
+# Use Tex Live Package Manager
+tlmgr install <my-package>
+
+# And reshim with asdf 
+asdf reshim
+```
+
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
 install & manage versions.
 
