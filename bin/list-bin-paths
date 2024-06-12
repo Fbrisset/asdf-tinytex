@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+arch_dir=""
+
+[[ "$os" == "darwin" ]] &&
+	arch_dir="universal-darwin" ||
+	arch_dir="x86_64-linux"
+
+echo "bin/${arch_dir}"

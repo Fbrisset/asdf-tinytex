@@ -15,10 +15,7 @@
 
 # Dependencies
 
-**TODO: adapt this section**
-
 - `bash`, `curl`, `tar`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html).
-- `SOME_ENV_VAR`: set this environment variable in your shell config to load the correct version of tool x.
 
 # Install
 
@@ -44,6 +41,16 @@ asdf global tinytex latest
 
 # Now tinytex commands are available
 tex --version
+```
+
+Install package : 
+
+```shell
+# Use Tex Live Package Manager
+tlmgr install <my-package>
+
+# And reshim with asdf 
+asdf reshim
 ```
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to

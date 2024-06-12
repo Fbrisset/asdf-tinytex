@@ -30,17 +30,21 @@ list_github_tags() {
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if tinytex has other means of determining installable versions.
 	list_github_tags
 }
 
 download_release() {
-	local version filename url
+	local version filename url os ext
 	version="$1"
 	filename="$2"
+	os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+	ext="tar.gz"
 
-	url="$GH_REPO/releases/download/v${version}/TinyTex-v${version}.tar.gz"
+	if [[ "$os" == "darwin" ]]; then
+		ext="tgz"
+	fi
+
+	url="$GH_REPO/releases/download/v${version}/TinyTex-v${version}.${ext}"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -49,23 +53,26 @@ download_release() {
 install_version() {
 	local install_type="$1"
 	local version="$2"
-	local install_path="${3%/bin}"
+	local install_path="$3"
+
+	local os arch_dir
+	os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+	arch_dir="x86_64-linux"
+	if [[ "$os" == "darwin" ]]; then
+		arch_dir="universal-darwin"
+	fi
 
 	if [ "$install_type" != "version" ]; then
 		fail "asdf-$TOOL_NAME supports release installs only"
 	fi
 
 	(
-		mkdir -p "$install_path/binaries/"
-		cp -r "$ASDF_DOWNLOAD_PATH"/bin/* "$install_path/binaries/"
-		ln -s "$install_path"/binaries/x86_64-linux/ "$install_path/bin"
-		rm -rf "${ASDF_DOWNLOAD_PATH:?}"/bin/
 		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
-		# TODO: Assert tinytex executable exists.
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
-		test -x "$install_path/bin/$tool_cmd" || fail "Expected $install_path/bin/$tool_cmd to be executable."
+		test -x "$install_path/bin/${arch_dir}/$tool_cmd" ||
+			fail "Expected $install_path/bin/${arch_dir}/$tool_cmd to be executable."
 
 		echo "$TOOL_NAME $version installation was successful!"
 	) || (
